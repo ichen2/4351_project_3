@@ -1,14 +1,23 @@
 package Semant;
+
+import Absyn.ExpList;
+import Absyn.SeqExp;
+import ErrorMsg.ErrorMsg;
+import Symbol.Table;
+import java.util.Hashtable;
 import Translate.Exp;
-import Types.Type;
+import Types.*;
+//import Types.Type;
 
 public class Semant {
   Env env;
+
   public Semant(ErrorMsg.ErrorMsg err) {
     this(new Env(err));
   }
+
   Semant(Env e) {
-    env = e;
+    env = e;  //do I need to make it this.env = e;
   }
 
   public void transProg(Absyn.Exp exp) {
@@ -16,18 +25,44 @@ public class Semant {
   }
 
   private void error(int pos, String msg) {
-    env.errorMsg.error(pos, msg);
+    env.errorMsg.error(pos, msg);   //do i need to make it this.env.errorMsg.error(pos, msg);
   }
 
-  static final Types.VOID   VOID   = new Types.VOID();
-  static final Types.INT    INT    = new Types.INT();
-  static final Types.STRING STRING = new Types.STRING();
-  static final Types.NIL    NIL    = new Types.NIL();
+  //static final Types.VOID   VOID   = new Types.VOID();   keeping types. to avoid confusion
+  static final Types.VOID   VOID   = new VOID();
+  static final Types.INT    INT    = new INT();
+  static final Types.STRING STRING = new STRING();
+  static final TypesNIL    NIL    = new NIL();
 
   private Exp checkInt(ExpTy et, int pos) {
     if (!INT.coerceTo(et.ty))
       error(pos, "integer required");
     return et.exp;
+  }
+
+  private Exp checkComparable(ExpTy et, int pos) //checks to see if it is a valid type
+  {
+  	Type a = et.ty.actual();
+  	if ((!(a instanceof INT)) ||
+  		(!(a instanceof STRING)) ||
+  		(!(a instanceof NIL)) ||
+  		(!(a instanceof RECORD)) ||
+  		(!(a instanceof ARRAY)))
+  	{
+  		error(pos, "integer, string, nil, record, or array is required");
+  	}
+  	return et.exp;
+  }
+
+  private Exp checkOrderable(ExpTy et, int pos)
+  {
+  	Type a = et.ty.actual();
+  	if((!(a instanceof INT)) ||
+  		(!(a instanceof STRING)))
+  	{
+  		error(pos, "integer or string is required");
+  	}
+  	return et.exp;
   }
 
   ExpTy transExp(Absyn.Exp e) {
