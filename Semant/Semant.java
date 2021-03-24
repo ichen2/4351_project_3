@@ -49,7 +49,7 @@ public class Semant {
   static final Types.VOID   VOID   = new VOID();
   static final Types.INT    INT    = new INT();
   static final Types.STRING STRING = new STRING();
-  static final TypesNIL    NIL    = new NIL();
+  static final Types.NIL    NIL    = new NIL();
 
   private Exp checkInt(ExpTy et, int pos) {
     if (!INT.coerceTo(et.ty))
@@ -186,10 +186,10 @@ public class Semant {
 
   ExpTy transExp(Absyn.CallExp e) {
     Entry entry = (Entry) env.venv.get(e.func);
-    if(f instanceof FunEntry) {
+    if(entry instanceof FunEntry) {
       FunEntry fun = (FunEntry) entry;
       transArgs(e.pos, fun.formals, e.args);
-      return new ExpTy(null, f.result);
+      return new ExpTy(null, fun.result);
     }
     error(e.pos, "function " + e.func + " is undeclared");
     return new ExpTy(null, VOID);
@@ -198,7 +198,7 @@ public class Semant {
   ExpTy transExp(Absyn.RecordExp e) { // !
     Types.NAME type = (Types.NAME) env.tenv.get(e.typ);
     if(type != null) {
-      Type actual = name.actual();
+      Type actual = type.actual();
       if(actual instanceof Types.RECORD) {
         Types.RECORD record = (Types.RECORD) actual;
         if(record == null) {
@@ -255,7 +255,7 @@ public class Semant {
 
     if(e.elseclause != null) {
       ExpTy elseClause = transExp(e.elseclause);
-      if(!then.ty.coerceTo(elseClause.ty)) {
+      if(!thenClause.ty.coerceTo(elseClause.ty)) {
         error(e.pos, "result type mismatch in if then statement");
       }
     }
@@ -280,11 +280,11 @@ public class Semant {
     checkInt(hi, e.hi.pos);
 
     e.var.entry = new LoopVarEntry(INT);
-    env.vend.put(e.var.name, e.var.entry);
+    env.venv.put(e.var.name, e.var.entry);
 
     Semant loop = new LoopSemant(env);
     ExpTy body = loop.transExp(e.body);
-    env.vend.endScope();
+    env.venv.endScope();
     
     if(!body.ty.coerceTo(VOID)) {
       error(e.body.pos, "result type mismatch in for loop");
@@ -342,7 +342,7 @@ public class Semant {
   Exp transDec(Absyn.Dec d) {
     if (d instanceof Absyn.VarDec)
       return transDec((Absyn.VarDec)d);
-  	if (d instanceof Absun.FunctionDec)
+  	if (d instanceof Absyn.FunctionDec)
   		return transDec((Absyn.FunctionDec)d);//need to make a function to handle this
   	if (d instanceof Absyn.TypeDec)
   		return transDec((Absyn.TypeDec)d); //need to make a function to handle this
@@ -443,7 +443,7 @@ public class Semant {
 	{
 		if(t == null)
 			return VOID;
-		Types.NAME name = (Types.NAme)env.tenv.get(t.name);
+		Types.NAME name = (Types.Name)env.tenv.get(t.name);
 		if(name != null)
 			return name;
 		error(t.pos, "undeclared type: " + t.name);
@@ -482,7 +482,7 @@ public class Semant {
 
 	ExpTy transVar(Absyn.Var v) {
 		if(v instanceof Absyn.SimpleVar)
-			return transVar	((Absyn.SImpleVar)v);
+			return transVar	((Absyn.SimpleVar)v);
 		if (v instanceof Absyn.FieldVar) {
 			return transVar((Absyn.FieldVar)v);
 		}
@@ -503,7 +503,7 @@ public class Semant {
 				field = field.tail)
 			{
 				if (field.fieldName == v.field) {
-					return new Expty(null, field.fieldType);
+					return new ExpTy(null, field.fieldType);
 				}
 				++count;
 			}
