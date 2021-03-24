@@ -85,8 +85,35 @@ public class Semant {
 
     switch (e.oper) {
     case Absyn.OpExp.PLUS:
+    case Absyn.OpExp.MINUS:
+    case Absyn.OpExp.MUL:
+    case Absyn.OpExp.DIV:
       checkInt(left, e.left.pos);
       checkInt(right, e.right.pos);
+      return new ExpTy(null, INT);
+    case Absyn.OpExp.EQ:
+    case Absyn.OpExp.NE:
+      checkComparable(left, e.left.pos);
+      checkComparable(right, e.right.pos);
+      if(STRING.coerceTo(left.ty) && STRING.coerceTo(right.ty)) {
+        return new ExpTy(null, INT);
+      }
+      else if(!left.ty.coerceTo(right.ty) && !right.ty.coerceTo(left.ty)) {
+        error(e.pos, "Operands not valid for equality");
+      }
+      return new ExpTy(null, INT);
+    case Absyn.OpExp.LT:
+    case Absyn.OpExp.LE:
+    case Absyn.OpExp.GT:
+    case Absyn.OpExp.GE:
+      checkComparable(left, e.left.pos);
+      checkComparable(right, e.right.pos);
+      if(STRING.coerceTo(left.ty) && STRING.coerceTo(right.ty)) {
+        return new ExpTy(null, INT);
+      }
+      else if(!left.ty.coerceTo(right.ty) && !right.ty.coerceTo(left.ty)) {
+        error(e.pos, "Operands not valid for inequality");
+      }
       return new ExpTy(null, INT);
     default:
       throw new Error("unknown operator");
