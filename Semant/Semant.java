@@ -184,7 +184,16 @@ public class Semant {
     return new ExpTy(null, body.ty);
   }
 
-  // skipping CallExp for now
+  ExpTy transExp(Absyn.CallExp e) {
+    Entry entry = (Entry) env.venv.get(e.func);
+    if(f instanceof FunEntry) {
+      FunEntry fun = (FunEntry) entry;
+      transArgs(e.pos, fun.formals, e.args);
+      return new ExpTy(null, f.result);
+    }
+    error(e.pos, "function " + e.func + " is undeclared");
+    return new ExpTy(null, VOID);
+  }
 
   ExpTy transExp(Absyn.RecordExp e) { // !
     Types.NAME type = (Types.NAME) env.tenv.get(e.typ);
@@ -561,16 +570,10 @@ public class Semant {
 }
 
 
-
-//Still need to be worked on
 class LoopSemant extends Semant{
-	  //temp.Label done;
-    /*LoopSeman(VarEntry e){
-    super(e);
-    }*/
+
 	  LoopSemant(Env e){
 		  super(e);
-		//  done = new temp.Label();
 	  }
 }
 }
