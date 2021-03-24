@@ -128,7 +128,7 @@ public class Semant {
   		return;
   	}
   	env.venv.put(f.fieldName, new VarEntry(f.fieldType));
-  	putTypefields(f.tail); //recursion with tail
+  	putTypeFields(f.tail); //recursion with tail
   }
 
   ExpTy transExp(Absyn.OpExp e) {
@@ -353,7 +353,7 @@ public class Semant {
     ExpTy init = transExp(d.init);
     Type type;
     if (d.typ == null) {
-      if (init.ty.coerceToTo(NIL))
+      if (init.ty.coerceTo(NIL))
       	error(d.pos, "Record type Missing");	
       type = init.ty;
     } else {
@@ -443,7 +443,7 @@ public class Semant {
 	{
 		if(t == null)
 			return VOID;
-		Types.NAME name = (Types.Name)env.tenv.get(t.name);
+		Types.NAME name = (Types.NAME)env.tenv.get(t.name);
 		if(name != null)
 			return name;
 		error(t.pos, "undeclared type: " + t.name);
