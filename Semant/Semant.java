@@ -324,5 +324,42 @@ public class Semant {
 
 
   }
+	
+   Type transTy(Absyn.Ty t){
+		if(t instanceof Absyn.NameTy)
+			return transTy((Absyn.NameTy)t);  //create function
+		if(t instanceof Absyn.RecordTy)
+			return transTy((Absyn.RecordTy)t);  //create function
+		if(t instanceof Absyn.ArrayTy)
+			return transTy((Absyn.ArrayTy)t);   //create function
+		throw new Error("TransTy Semant");
+	}
+
+	Type transTy(Absyn.NameTy t)
+	{
+		if(t == null)
+			return VOID;
+		Types.NAME name = (Types.NAme)env.tenv.get(t.name);
+		if(name != null)
+			return name;
+		error(t.pos, "undeclared type: " + t.name);
+		return VOID;
+	}
+
+	Type transTy(Absyn.RecordTy t){
+		Types.RECORD type = transTypeFields(new Hashtable(), t.fields);
+		if(type !+ null)
+			return type;
+		return VOID;
+	}
+
+	Type transTy(Absyn.ArrayTy t){
+		Types.NAME name = (Types.NAME)env.tenv.get(t.typ);
+		if (name != null) {
+			return new Types.ARRAY(name);
+		}
+		error(t.pos, "undeclared type: " + t.typ);
+		return VOID;
+	}
 }
 
