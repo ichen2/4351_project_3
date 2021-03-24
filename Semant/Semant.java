@@ -184,25 +184,9 @@ public class Semant {
     return new ExpTy(null, body.ty);
   }
 
-  ExpTy transExp(Absyn.VarExp e) {
-    return transVar(e.var);
-  }
-
-  ExpTy transExp(Absyn.NilExp e) {
-    return new ExpTy(null, NIL);
-  }
-
-  ExpTy transExp(Absyn.IntExp e) {
-    return new ExpTy(null, INT);
-  }
-
-  ExpTy transExp(Absyn.StringExp e) {
-    return new ExpTy(null, STRING);
-  }
-
   // skipping CallExp for now
 
-  ExpTy transExp(Absyn.RecordExp e) {
+  ExpTy transExp(Absyn.RecordExp e) { // !
     Types.NAME type = (Types.NAME) env.tenv.get(e.typ);
     if(type != null) {
       Type actual = name.actual();
@@ -233,6 +217,22 @@ public class Semant {
       error(e.pos, "undeclared type " + e.typ);
     }
     return new ExpTy(null, VOID);
+  }
+
+  ExpTy transExp(Absyn.VarExp e) {
+    return transVar(e.var);
+  }
+
+  ExpTy transExp(Absyn.NilExp e) {
+    return new ExpTy(null, NIL);
+  }
+
+  ExpTy transExp(Absyn.IntExp e) {
+    return new ExpTy(null, INT);
+  }
+
+  ExpTy transExp(Absyn.StringExp e) {
+    return new ExpTy(null, STRING);
   }
 
   Exp transDec(Absyn.Dec d) {
