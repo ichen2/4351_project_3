@@ -219,6 +219,101 @@ public class Semant {
     return new ExpTy(null, VOID);
   }
 
+  ExpTy transExp(Absyn.SeqExp e) {
+    Type type = VOID;
+    ExpList head = new ExpList(null, null); // might not need these two lines
+    ExpList prev = head;
+    for(Absyn.ExpList exp = e.list; exp != null; exp = exp.tail) {
+      ExpTy et = transExp(exp.head);
+      type = et.ty;
+    }
+    return new ExpTy(null, type);
+  }
+
+  ExpTy transExp(Absyn.AssignExp e) {
+    ExpTy var = transVar(e.var);
+    ExpTy exp = transExp(e.exp);
+    if(exp.ty.coerceTo(var.ty)) {
+      error(e.pos, "assignment types do not match");
+    }
+    return new ExpTy(null VOID);
+  }
+
+  ExpTy transExp(Absyn.IfExp e) {
+    ExpTy test = transExp(e.test);
+    checkInt(test, e.test.pos);
+    ExpTy thenClause = transExp(e.thenclause);
+
+    if(e.elseclause != null) {
+      ExpTy elseClause = transExp(e.elseclause);
+      if(!then.ty.coerceTo(else.ty)) {
+        error(e.pos, "result type mismatch in if then statement");
+      }
+    }
+    return thenClause;
+  }
+
+  ExpTy transExp(Absyn.WhileExp e) {
+    ExpTy test = transExp(e.test);
+    checkInt(test, e.test.pos);
+    LoopSemant loop = new LoopSemant(env);
+    ExpTy body = loop.transExp(e.body);
+    if(!body.ty.coerceTo(VOID)) {
+      error(e.body.pos, "result type mismatch in while loop");
+    }
+    return new ExpTy(null, VOID);
+  }
+
+  ExpTy transExp(Absyn.ForExp e) {
+    ExpTy lo = transExp(e.var.init);
+    checkInt(lo, e.var.pos);
+    ExpTy hi = transExp(e.hi);
+    checkInt(hi, e.hi.pos);
+
+    e.var.entry = new LoopVarEntry(INT);
+    env.vend.put(e.var.name, e.var.entry);
+
+    Semant loop = new LoopSemant(env);
+    ExpTy body = loop.transExp(e.body);
+    env.vend.endScope();
+    
+    if(!body.ty.coerceTo(VOID)) {
+      error(e.body.pos, "result type mismatch in for loop");
+    }
+    return new ExpTy(null, VOID);
+  }
+
+  ExpTy transExp(Absyn.BreakExp e) {
+    error(e.pos, "break outside of loop");
+    return new ExpTy(null, VOID);
+  }
+
+  ExpTy transExp(Absyn.ArrayExp e) {
+    Types.NAME type = (Types.NAME) env.tenv.get(e.typ);
+
+  
+    ExpTy size = transExp(e.size);
+    ExpTy init = transExp(e.init);
+
+    checkInt(size, e.size.pos);
+
+    if(type == null) {
+      error(e.pos, "array of undefined type " + e.typ);
+      return new ExpTy(null, VOID);
+    }
+    else if(!(type.actual() instanceof Types.ARRAY)) {
+      error(e.pos, "array type required");
+      return new ExpTy(null, VOID);
+    }
+
+    Type elem = ((Types.ARRAY) type.actual()).element;
+
+    if(!init.ty.coerceTo(elem)) {
+      error(e.init.pos, "element type does not match array type");
+    }
+    return new ExpTy(null, type);
+  }
+
   ExpTy transExp(Absyn.VarExp e) {
     return transVar(e.var);
   }
