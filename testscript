@@ -1,0 +1,13 @@
+FILE=./our_output.txt
+if [ -f "$FILE" ]; then
+	rm $FILE
+fi
+for i in {1..48}
+do
+	echo "testing test $i..."
+	echo "$i" >> $FILE
+	java Parse.Main Tests/test$i.tig >> $FILE
+	if [ $i -lt 48 ]; then 
+		echo "" >> $FILE
+	fi
+done
