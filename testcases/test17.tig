@@ -1,0 +1,10 @@
+/* error: definition of recursive types is interrupted */
+let
+/* define a tree */
+typedef {key: int, children: treelist}  tree
+var d:int :=0
+typedef {hd: tree, tl: treelist}  treelist
+
+in
+	d
+end

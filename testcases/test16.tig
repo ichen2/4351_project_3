@@ -1,0 +1,11 @@
+/* error: mutually recursive types thet do not pass through record or array */
+let 
+
+typedef c a
+typedef a b
+typedef d c
+typedef a d
+
+in
+ ""
+end

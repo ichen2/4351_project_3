@@ -1,0 +1,7 @@
+/* error : procedure returns value */
+let
+	void g(a:int) { a }
+in 
+	g(2)
+end
+

@@ -1,0 +1,10 @@
+/* local types hide global */
+let
+	typedef int a
+in
+	let
+		typedef string a
+	in
+		0
+	end
+end

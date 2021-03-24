@@ -1,0 +1,10 @@
+/* error : different record types */
+
+let
+	typedef {name:string , id:int}  rectype1
+	typedef {name:string , id:int}  rectype2
+
+	var rec1: rectype1 := rectype2 {name="Name", id=0}
+in
+	rec1
+end

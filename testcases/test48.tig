@@ -1,0 +1,11 @@
+/* This is legal.  The second function "g" simply hides the first one.
+   Because of the intervening variable declaration, the two "g" functions
+   are not in the same  batch of mutually recursive functions. 
+   See also test39 */
+let
+	int g(a:int) { a }
+	typedef int t
+	int g(a:int) { a }
+in
+	0
+end

@@ -1,0 +1,10 @@
+/* error : different array types */
+
+let
+	typedef array of int  arrtype1
+	typedef array of int  arrtype2
+
+	var arr1: arrtype1 := arrtype2 [10] of 0
+in
+	arr1
+end

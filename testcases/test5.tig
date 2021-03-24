@@ -1,0 +1,14 @@
+/* define valid recursive types */
+let
+/* define a list */
+typedef {hd: int, tl: intlist} intlist
+
+/* define a tree */
+typedef {key: int, children: treelist} tree
+typedef {hd: tree, tl: treelist} treelist
+
+var lis:intlist := intlist { hd=0, tl= nil } 
+
+in
+	lis
+end

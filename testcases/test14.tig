@@ -1,0 +1,13 @@
+/* error : compare rec with array */
+
+let
+
+	typedef array of int  arrtype
+	typedef {name:string, id: int}  rectype
+
+	var rec := rectype {name="aname", id=0}
+	var arr := arrtype [3] of 0
+
+in
+	if rec <> arr then 3 else 4
+end

@@ -1,0 +1,9 @@
+/* error: initializing nil expressions not constrained by record type + syntax error */
+let 
+	typedef {name:string, id:int} rectype
+
+	var a:= rectype nil
+	var a:= nil
+in
+	a
+end

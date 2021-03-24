@@ -1,0 +1,8 @@
+/* locals hide globals */
+let
+	var a:=0
+
+	int g(a:int) { a }
+in
+ g(2)
+end

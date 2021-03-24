@@ -1,0 +1,11 @@
+/* valid nil initialization and assignment */
+let 
+
+	typedef {name:string, id:int}  rectype
+	var b:rectype := nil
+
+in
+
+	b := nil
+
+end
