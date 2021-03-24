@@ -202,7 +202,7 @@ public class Semant {
       if(actual instanceof Types.RECORD) {
         Types.RECORD record = (Types.RECORD) actual;
         if(record == null) {
-          error(e.pos, )
+          error(e.pos, "record is undefined");
         }
         for(Absyn.FieldExpList field = e.fields; field != null; field = field.tail) {
           ExpTy value = transExp(field.init);
@@ -245,7 +245,7 @@ public class Semant {
     if(exp.ty.coerceTo(var.ty)) {
       error(e.pos, "assignment types do not match");
     }
-    return new ExpTy(null VOID);
+    return new ExpTy(null, VOID);
   }
 
   ExpTy transExp(Absyn.IfExp e) {
@@ -255,7 +255,7 @@ public class Semant {
 
     if(e.elseclause != null) {
       ExpTy elseClause = transExp(e.elseclause);
-      if(!then.ty.coerceTo(else.ty)) {
+      if(!then.ty.coerceTo(elseClause.ty)) {
         error(e.pos, "result type mismatch in if then statement");
       }
     }
@@ -398,7 +398,7 @@ public class Semant {
   Exp transDec(Absyn.TypeDec d) { //ian can you check my hashtable
   	Hashtable hash = new Hashtable();
   	for(Absyn.TypeDec type = d;
-  		type !- null;
+  		type != null;
   		type = type.next)
   	{
   		if (hash.put(type.name, type.name) != null)
@@ -452,7 +452,7 @@ public class Semant {
 
 	Type transTy(Absyn.RecordTy t){
 		Types.RECORD type = transTypeFields(new Hashtable(), t.fields);
-		if(type !+ null)
+		if(type != null)
 			return type;
 		return VOID;
 	}
@@ -481,12 +481,12 @@ public class Semant {
 	}
 
 	ExpTy transVar(Absyn.Var v) {
-		if(v instanceof ABsyn.SimpleVar)
+		if(v instanceof Absyn.SimpleVar)
 			return transVar	((Absyn.SImpleVar)v);
 		if (v instanceof Absyn.FieldVar) {
 			return transVar((Absyn.FieldVar)v);
 		}
-		if (v instance of Absyn.SubscriptVar) {
+		if (v instanceof Absyn.SubscriptVar) {
 			return transVar((Absyn.SubscriptVar)v);
 		}
 		throw new Error("TransVar Semant");
@@ -575,6 +575,5 @@ class LoopSemant extends Semant{
 	  LoopSemant(Env e){
 		  super(e);
 	  }
-}
 }
 
