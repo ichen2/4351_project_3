@@ -135,23 +135,91 @@ public class Semant {
   Exp transDec(Absyn.Dec d) {
     if (d instanceof Absyn.VarDec)
       return transDec((Absyn.VarDec)d);
+  	if (d instanceof Absun.FunctionDec)
+  		return transDec((Absyn.FunctionDec)d);//need to make a function to handle this
+  	if (d instanceof Absyn.TypeDec)
+  		return transDec((Absyn.TypeDec)d); //need to make a function to handle this
     throw new Error("Semant.transDec");
   }
 
   Exp transDec(Absyn.VarDec d) {
-    // NOTE: THIS IMPLEMENTATION IS INCOMPLETE
-    // It is here to show you the general form of the transDec methods
     ExpTy init = transExp(d.init);
     Type type;
     if (d.typ == null) {
+      if (init.ty.coerceToTo(NIL))
+      	error(d.pos, "Record type Missing");	
       type = init.ty;
     } else {
-      type = VOID;
-      throw new Error("unimplemented");
+      type = transTy(d.typ);
+      if(!init.ty.coerceTo(type))
+      	error(d.pos, "Assignment type incompatible");
     }
     d.entry = new VarEntry(type);
     env.venv.put(d.name, d.entry);
     return null;
+  }
+
+  Exp transDec(Absyn.FunctionDec d) {  //ian check to see if my hashtables are good
+  	Hashtable hash = new Hashtable();
+  	for (Absyn.FunctionDec f = d;
+  		f != null;
+  		f = f.next)
+  	{
+  		if (hash.put(f.name, f.name) != null)
+  			error(f.pos, "function redeclared");
+  		Types.RECORD fields = transTypeFields(new Hashtable(), f.params); //need to make this function
+  		Type type = transTy(f.result);
+  		f.entry = new FunEntry(fields, type);   //helper class
+  		env.venv.put(f.name, f.entry);
+  	}
+
+  	for (Absyn.FunctionDec f = d;
+  		f != null;
+  		f = f.next)
+  	{
+  		env.venv.beginScope();
+  		putTypeFields(f.entry.formals);
+  		Semant fun = new Semant(env);
+  		ExpTy body = fun.transExp(f.body);
+  		if(!body.ty.coerceTo(f.entry.result))
+  			error(f.body.pos, "result type incompatible");
+  		env.venv.endScope();
+  	}
+  	return null;
+  }
+
+  Exp transDec(Absyn.TypeDec d) { //ian can you check my hashtable
+  	Hashtable hash = new Hashtable();
+  	for(Absyn.TypeDec type = d;
+  		type !- null;
+  		type = type.next)
+  	{
+  		if (hash.put(type.name, type.name) != null)
+  			error(type.pos, "type redeclared");
+  		type.entry = new Types.NAME(type.name);
+  		env.tenv.put(type.name, type.entry);
+  	}
+
+  	for (Absyn.TypeDec type = d;
+  		type != null;
+  		type = type.next)
+  	{
+  		Types.NAME name = (Types.NAME)type.entry;
+  		name.bind(transTy(type.ty));
+  	}
+
+  	for (Absyn.TypeDec type = d;
+  		type != null;
+  		type = type.next)
+  	{
+  		Types.NAME name = (Types.NAME)type.entry;
+  		if(name.isLoop()) //where is is loop?  Is it in Types.Name??
+  			error(type.pos, "illegal TypeDec");
+  	}
+
+  	return null;
+
+
   }
 }
 
