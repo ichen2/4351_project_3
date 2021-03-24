@@ -361,5 +361,122 @@ public class Semant {
 		error(t.pos, "undeclared type: " + t.typ);
 		return VOID;
 	}
+	
+	
+	
+	ExpTy transVar(Absyn.SimpleVar e) {
+		Entry x = (Entry)env.venv.get(e.name);
+		if (x instanceof VarEntry) {
+			VarEntry ent = (VarEntry)x;
+			return new ExpTy(null, ent.ty);
+		}
+		else{
+			error(e.pos, "undefined variable");
+			return new ExpTy(null, INT);
+		}
+	}
+
+	ExpTy transVar(Absyn.Var v) {
+		if(v instanceof ABsyn.SimpleVar)
+			return transVar	((Absyn.SImpleVar)v);
+		if (v instanceof Absyn.FieldVar) {
+			return transVar((Absyn.FieldVar)v);
+		}
+		if (v instance of Absyn.SubscriptVar) {
+			return transVar((Absyn.SubscriptVar)v);
+		}
+		throw new Error("TransVar Semant");
+	}
+
+
+	ExpTy transVar(Absyn.FieldVar v) {
+		ExpTy var = transVar(v.var);
+		Type actual = var.ty.actual();
+		if (actual instanceof Types.RECORD) {
+			int count = 0;
+			for(Types.RECORD field = (Types.RECORD)actual;
+				field != null;
+				field = field.tail)
+			{
+				if (field.fieldName == v.field) {
+					return new Expty(null, field.fieldType);
+				}
+				++count;
+			}
+			error(v.pos, "undeclared field: " + v.field);
+		}
+		else{
+			error(v.var.pos, "record required");
+		}
+		return new ExpTy(null, VOID);
+	}
+
+	ExpTy transVar(Absyn.SubscriptVar v) {
+		ExpTy var = transVar(v.var);
+		ExpTy index = transExp(v.index);
+		checkInt(index, v.index.pos);
+		Type actual = var.ty.actual();
+		if(actual instanceof Types.ARRAY) {
+			Types.ARRAY array = (Types.ARRAY)actual;
+			return new ExpTy(null, array.element);
+		}
+		error(v.var.pos, "array is required");
+		return new ExpTy(null, VOID);
+	}
+
+
+
+
+
+
+
+
+
+
+
+	private Types.RECORD transTypeFields(Hashtable hash, Absyn.FieldList f){
+	  if (f == null)
+		  return null;
+	  Types.NAME name = (Types.NAME)env.tenv.get(f.typ);
+	  if (name == null)
+		  error(f.pos, "undeclared type: " + f.typ);
+	  if( hash.put(f.name, f.name) != null)
+		  error(f.pos, "function redeclared" + f.name);
+	  return new Types.RECORD(f.name, name, transTypeFields(hash, f.tail));
+  }
+  //DONE but check 
+  private void transFields(int epos, Types.RECORD f, Absyn.FieldExpList exp)
+  {
+	    if (f == null) {
+	      if (exp != null)
+	        error(exp.pos, "too many expressions");
+	      //return null;
+	    }
+	    if (exp == null) {
+	      error(epos, "missing expression for " + f.fieldName);
+	      //return null;
+	    }
+	    ExpTy e = transExp(exp.init);
+	    if (exp.name != f.fieldName)
+	      error(exp.pos, "field name mismatch");
+	    if (!e.ty.coerceTo(f.fieldType))
+	      error(exp.pos, "field type mismatch");
+	    //return new ExpList(e.exp, transFields(epos, f.tail, exp.tail));
+   }
+}
+
+
+
+//Still need to be worked on
+class LoopSemant extends Semant{
+	  //temp.Label done;
+    /*LoopSeman(VarEntry e){
+    super(e);
+    }*/
+	  LoopSemant(Env e){
+		  super(e);
+		//  done = new temp.Label();
+	  }
+}
 }
 
