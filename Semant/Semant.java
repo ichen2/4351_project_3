@@ -82,7 +82,6 @@ public class Semant {
   	return et.exp;
   }
 
-<<<<<<< HEAD
   ExpTy transExp(Absyn.Exp e) {
     ExpTy result;
 
@@ -121,7 +120,8 @@ public class Semant {
     else throw new Error("Semant.transExp");
     e.type = result.ty;
     return result;
-=======
+  }
+
   private void putTypeFields(Types.RECORD f)
   {
   	if(f == null){
@@ -129,7 +129,6 @@ public class Semant {
   	}
   	env.venv.put(f.fieldName, new VarEntry(f.fieldType));
   	putTypefields(f.tail); //recursion with tail
->>>>>>> 06996636a266e87f24ac66eb17cc11a648b19f05
   }
 
   ExpTy transExp(Absyn.OpExp e) {
@@ -183,6 +182,57 @@ public class Semant {
     env.venv.endScope();
     env.tenv.endScope();
     return new ExpTy(null, body.ty);
+  }
+
+  ExpTy transExp(Absyn.VarExp e) {
+    return transVar(e.var);
+  }
+
+  ExpTy transExp(Absyn.NilExp e) {
+    return new ExpTy(null, NIL);
+  }
+
+  ExpTy transExp(Absyn.IntExp e) {
+    return new ExpTy(null, INT);
+  }
+
+  ExpTy transExp(Absyn.StringExp e) {
+    return new ExpTy(null, STRING);
+  }
+
+  // skipping CallExp for now
+
+  ExpTy transExp(Absyn.RecordExp e) {
+    Types.NAME type = (Types.NAME) env.tenv.get(e.typ);
+    if(type != null) {
+      Type actual = name.actual();
+      if(actual instanceof Types.RECORD) {
+        Types.RECORD record = (Types.RECORD) actual;
+        if(record == null) {
+          error(e.pos, )
+        }
+        for(Absyn.FieldExpList field = e.fields; field != null; field = field.tail) {
+          ExpTy value = transExp(field.init);
+
+          if(record == null) {
+            error(e.pos, "too many expressions");
+          }
+          else if(field.name != record.fieldName) {
+            error(field.pos, "field names do not match");
+          }
+          else if(!value.ty.coerceTo(record.fieldType)) {
+            error(field.pos, "field types do not match");
+          }
+          if(record != null) {
+            record = record.tail;
+          }
+        }
+      }
+    }
+    else {
+      error(e.pos, "undeclared type " + e.typ);
+    }
+    return new ExpTy(null, VOID);
   }
 
   Exp transDec(Absyn.Dec d) {
