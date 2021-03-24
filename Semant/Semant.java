@@ -24,6 +24,23 @@ public class Semant {
     transExp(exp);
   }
 
+  private void transArgs(int epos, Types.RECORD formal, Absyn.ExpList args)
+  {
+  	if(formal == null){
+  		if(args != null){
+  			error(args.head.pos, "too many arguements!");
+  		}
+  	}
+  	if(args == null){
+  		error(epos, "missing argument for " + formal.fieldName);  //where is fieldName
+
+  	}
+
+  	ExpTy e = transExp(args.head);
+  	if(!e.ty.coerceTo(formal.fieldType))
+  		error(args.head.pos, "argument type mismatch!");
+  }
+
   private void error(int pos, String msg) {
     env.errorMsg.error(pos, msg);   //do i need to make it this.env.errorMsg.error(pos, msg);
   }
@@ -65,18 +82,13 @@ public class Semant {
   	return et.exp;
   }
 
-  ExpTy transExp(Absyn.Exp e) {
-    ExpTy result;
-
-    if (e == null)
-      return new ExpTy(null, VOID);
-    else if (e instanceof Absyn.OpExp)
-      result = transExp((Absyn.OpExp)e);
-    else if (e instanceof Absyn.LetExp)
-      result = transExp((Absyn.LetExp)e);
-    else throw new Error("Semant.transExp");
-    e.type = result.ty;
-    return result;
+  private void putTypeFields(Types.RECORD f)
+  {
+  	if(f == null){
+  		return;
+  	}
+  	env.venv.put(f.fieldName, new VarEntry(f.fieldType));
+  	putTypefields(f.tail); //recursion with tail
   }
 
   ExpTy transExp(Absyn.OpExp e) {
