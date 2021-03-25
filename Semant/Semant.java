@@ -2,7 +2,6 @@ package Semant;
 
 import Absyn.ExpList;
 import Absyn.SeqExp;
-import ErrorMsg.ErrorMsg;
 import Symbol.Table;
 import java.util.Hashtable;
 import Translate.Exp;
