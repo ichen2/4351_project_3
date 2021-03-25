@@ -576,8 +576,6 @@ class LoopSemant extends Semant{
 	  LoopSemant(Env e){
 		  super(e);
 	  }
-	ExpTy transExp(BreakExp e) {
-    return new ExpTy(null, Semant.VOID);
-  }
+	
 }
 
