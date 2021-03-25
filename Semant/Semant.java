@@ -284,7 +284,7 @@ public class Semant {
   }
 
   ExpTy transExp(Absyn.ForExp e) {
-    if(e instanceof Absyn.VarDec) {
+    if(e.var instanceof Absyn.VarDec) {
       ExpTy lo = transExp(e.var.init);
       checkInt(lo, e.var.pos);
       ExpTy hi = transExp(e.hi);
