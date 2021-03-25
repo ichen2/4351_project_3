@@ -136,13 +136,31 @@ public class Semant {
 
     switch (e.oper) {
     case Absyn.OpExp.PLUS:
+      checkInt(left, e.left.pos);
+      checkInt(right, e.right.pos);
+      return new ExpTy(null, INT);
     case Absyn.OpExp.MINUS:
+      checkInt(left, e.left.pos);
+      checkInt(right, e.right.pos);
+      return new ExpTy(null, INT);
     case Absyn.OpExp.MUL:
+      checkInt(left, e.left.pos);
+      checkInt(right, e.right.pos);
+      return new ExpTy(null, INT);
     case Absyn.OpExp.DIV:
       checkInt(left, e.left.pos);
       checkInt(right, e.right.pos);
       return new ExpTy(null, INT);
     case Absyn.OpExp.EQ:
+      checkComparable(left, e.left.pos);
+      checkComparable(right, e.right.pos);
+      if(STRING.coerceTo(left.ty) && STRING.coerceTo(right.ty)) {
+        return new ExpTy(null, INT);
+      }
+      else if(!left.ty.coerceTo(right.ty) && !right.ty.coerceTo(left.ty)) {
+        error(e.pos, "Operands not valid for equality");
+      }
+      return new ExpTy(null, INT);
     case Absyn.OpExp.NE:
       checkComparable(left, e.left.pos);
       checkComparable(right, e.right.pos);
@@ -154,18 +172,38 @@ public class Semant {
       }
       return new ExpTy(null, INT);
     case Absyn.OpExp.LT:
+      checkOrderable(left, e.left.pos);
+        checkOrderable(right, e.right.pos);
+        if(STRING.coerceTo(left.ty) && STRING.coerceTo(right.ty))
+      	  return new ExpTy(null, INT);
+        else if(!left.ty.coerceTo(right.ty) && !right.ty.coerceTo(left.ty))
+      	  error(e.pos, "Operands not valid for inequality");
+        return new ExpTy(null, INT); 
     case Absyn.OpExp.LE:
+      checkOrderable(left, e.left.pos);
+        checkOrderable(right, e.right.pos);
+        if(STRING.coerceTo(left.ty) && STRING.coerceTo(right.ty))
+      	  return new ExpTy(null, INT);
+        else if(!left.ty.coerceTo(right.ty) && !right.ty.coerceTo(left.ty))
+      	  error(e.pos, "Operands not valid for inequality");
+        return new ExpTy(null, INT); 
     case Absyn.OpExp.GT:
+      checkOrderable(left, e.left.pos);
+        checkOrderable(right, e.right.pos);
+        if(STRING.coerceTo(left.ty) && STRING.coerceTo(right.ty))
+      	  return new ExpTy(null, INT);
+        else if(!left.ty.coerceTo(right.ty) && !right.ty.coerceTo(left.ty))
+      	  error(e.pos, "Operands not valid for inequality");
+        return new ExpTy(null, INT); 
     case Absyn.OpExp.GE:
       checkComparable(left, e.left.pos);
-      checkComparable(right, e.right.pos);
-      if(STRING.coerceTo(left.ty) && STRING.coerceTo(right.ty)) {
-        return new ExpTy(null, INT);
-      }
-      else if(!left.ty.coerceTo(right.ty) && !right.ty.coerceTo(left.ty)) {
-        error(e.pos, "Operands not valid for inequality");
-      }
-      return new ExpTy(null, INT);
+      checkOrderable(left, e.left.pos);
+        checkOrderable(right, e.right.pos);
+        if(STRING.coerceTo(left.ty) && STRING.coerceTo(right.ty))
+      	  return new ExpTy(null, INT);
+        else if(!left.ty.coerceTo(right.ty) && !right.ty.coerceTo(left.ty))
+      	  error(e.pos, "Operands not valid for inequality");
+        return new ExpTy(null, INT); 
     default:
       throw new Error("unknown operator");
     }
