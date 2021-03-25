@@ -32,9 +32,9 @@ class Env {
     tenv = new Table();
 
     // initialize tenv and venv with predefined identifiers
-    NAME Void = new NAME(sym("void"));
-    Void.bind(Semant.VOID);
-    tenv.put(sym("void"), Void);
+   // NAME Void = new NAME(sym("void"));
+   // Void.bind(Semant.VOID);
+    //tenv.put(sym("void"), Void);
 
     NAME INT = new NAME(sym("int"));
     INT.bind(Semant.INT);
