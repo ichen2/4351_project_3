@@ -59,11 +59,11 @@ public class Semant {
   private Exp checkComparable(ExpTy et, int pos) //checks to see if it is a valid type
   {
   	Type a = et.ty.actual();
-  	if ((!(a instanceof INT)) ||
-  		(!(a instanceof STRING)) ||
-  		(!(a instanceof NIL)) ||
-  		(!(a instanceof RECORD)) ||
-  		(!(a instanceof ARRAY)))
+  	if (!(a instanceof INT ||
+  		a instanceof STRING ||
+  		a instanceof NIL ||
+  		a instanceof RECORD ||
+  		a instanceof ARRAY))
   	{
   		error(pos, "integer, string, nil, record, or array is required");
   	}
