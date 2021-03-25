@@ -136,17 +136,8 @@ public class Semant {
 
     switch (e.oper) {
     case Absyn.OpExp.PLUS:
-      checkInt(left, e.left.pos);
-      checkInt(right, e.right.pos);
-      return new ExpTy(null, INT);
     case Absyn.OpExp.MINUS:
-      checkInt(left, e.left.pos);
-      checkInt(right, e.right.pos);
-      return new ExpTy(null, INT);
     case Absyn.OpExp.MUL:
-      checkInt(left, e.left.pos);
-      checkInt(right, e.right.pos);
-      return new ExpTy(null, INT);
     case Absyn.OpExp.DIV:
       checkInt(left, e.left.pos);
       checkInt(right, e.right.pos);
@@ -293,23 +284,28 @@ public class Semant {
   }
 
   ExpTy transExp(Absyn.ForExp e) {
-    /*ExpTy lo = transExp(e.var.init);
-    checkInt(lo, e.var.pos);
-    ExpTy hi = transExp(e.hi);
-    checkInt(hi, e.hi.pos);
-    
-    this.env.venv.beginScope();
+    if(e instanceof Absyn.VarDec) {
+      ExpTy lo = transExp(e.var.init);
+      checkInt(lo, e.var.pos);
+      ExpTy hi = transExp(e.hi);
+      checkInt(hi, e.hi.pos);
+      
+      this.env.venv.beginScope();
 
-    e.var.entry = new LoopVarEntry(INT);
-    this.env.venv.put(e.var.name, e.var.entry);
+      e.var.entry = new LoopVarEntry(INT);
+      this.env.venv.put(e.var.name, e.var.entry);
 
-    Semant loop = new LoopSemant(env);
-    ExpTy body = loop.transExp(e.body);
-    this.env.venv.endScope();
-    
-    if(!body.ty.coerceTo(VOID)) {
-      error(e.body.pos, "result type mismatch in for loop");
-    }*/
+      Semant loop = new LoopSemant(env);
+      ExpTy body = loop.transExp(e.body);
+      this.env.venv.endScope();
+      
+      if(!body.ty.coerceTo(VOID)) {
+        error(e.body.pos, "result type mismatch in for loop");
+      }
+    }
+    else {
+      error(e.body.pos, "expression is not a function"); 
+    }
     return new ExpTy(null, VOID);
   }
 
