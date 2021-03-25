@@ -277,13 +277,15 @@ public class Semant {
     checkInt(lo, e.var.pos);
     ExpTy hi = transExp(e.hi);
     checkInt(hi, e.hi.pos);
+    
+    this.env.venv.beginScope();
 
     e.var.entry = new LoopVarEntry(INT);
-    env.venv.put(e.var.name, e.var.entry);
+    this.env.venv.put(e.var.name, e.var.entry);
 
     Semant loop = new LoopSemant(env);
     ExpTy body = loop.transExp(e.body);
-    env.venv.endScope();
+    this.env.venv.endScope();
     
     if(!body.ty.coerceTo(VOID)) {
       error(e.body.pos, "result type mismatch in for loop");
