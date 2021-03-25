@@ -293,7 +293,7 @@ public class Semant {
   }
 
   ExpTy transExp(Absyn.ForExp e) {
-    ExpTy lo = transExp(e.var.init);
+    /*ExpTy lo = transExp(e.var.init);
     checkInt(lo, e.var.pos);
     ExpTy hi = transExp(e.hi);
     checkInt(hi, e.hi.pos);
@@ -309,7 +309,7 @@ public class Semant {
     
     if(!body.ty.coerceTo(VOID)) {
       error(e.body.pos, "result type mismatch in for loop");
-    }
+    }*/
     return new ExpTy(null, VOID);
   }
 
