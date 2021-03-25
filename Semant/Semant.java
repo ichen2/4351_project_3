@@ -579,3 +579,8 @@ class LoopSemant extends Semant{
 	
 }
 
+class LoopVarEntry extends VarEntry {
+  LoopVarEntry(Type t) {
+    super(t);
+  }
+
