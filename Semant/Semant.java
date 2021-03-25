@@ -5,7 +5,7 @@ import Absyn.SeqExp;
 import Symbol.Table;
 import java.util.Hashtable;
 import Translate.Exp;
-import Types.Type;
+import Types.*;
 //import Types.Type;
 
 public class Semant {
