@@ -583,4 +583,4 @@ class LoopVarEntry extends VarEntry {
   LoopVarEntry(Type t) {
     super(t);
   }
-
+}
