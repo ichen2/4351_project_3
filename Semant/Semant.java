@@ -233,36 +233,18 @@ public class Semant {
   }
 
   ExpTy transExp(Absyn.RecordExp e) { // !
-    Types.NAME type = (Types.NAME) env.tenv.get(e.typ);
-    if(type != null) {
-      Type actual = type.actual();
-      if(actual instanceof Types.RECORD) {
-        Types.RECORD record = (Types.RECORD) actual;
-        if(record == null) {
-          error(e.pos, "record is undefined");
-        }
-        for(Absyn.FieldExpList field = e.fields; field != null; field = field.tail) {
-          ExpTy value = transExp(field.init);
-
-          if(record == null) {
-            error(e.pos, "too many expressions");
-          }
-          else if(field.name != record.fieldName) {
-            error(field.pos, "field names do not match");
-          }
-          else if(!value.ty.coerceTo(record.fieldType)) {
-            error(field.pos, "field types do not match");
-          }
-          if(record != null) {
-            record = record.tail;
-          }
-        }
-      }
-    }
-    else {
-      error(e.pos, "undeclared type " + e.typ);
-    }
-    return new ExpTy(null, VOID);
+    Types.NAME name = (Types.NAME)env.tenv.get(e.typ);
+   if(name != null) {
+	   Type actual = name.actual();
+	   if( actual instanceof Types.RECORD){
+		   Types.RECORD r = (Types.RECORD)actual;
+		   transFields(e.pos, r, e.fields);
+		   return new ExpTy(null, name);
+	   }
+	   error(e.pos, "Record type required");
+   }else
+	   error(e.pos, "undeclared type" + e.typ);
+   return new ExpTy(null, VOID);
   }
 
   ExpTy transExp(Absyn.SeqExp e) {
