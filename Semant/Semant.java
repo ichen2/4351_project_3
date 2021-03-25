@@ -73,8 +73,8 @@ public class Semant {
   private Exp checkOrderable(ExpTy et, int pos)
   {
   	Type a = et.ty.actual();
-  	if((!(a instanceof INT)) ||
-  		(!(a instanceof STRING)))
+  	if(!(a instanceof INT ||
+  		a instanceof STRING))
   	{
   		error(pos, "integer or string is required");
   	}
