@@ -2,7 +2,7 @@ package Semant;
 
 import Absyn.ExpList;
 import Absyn.SeqExp;
-import Symbol.Table;
+//import Symbol.Table;
 import java.util.Hashtable;
 import Translate.Exp;
 import Types.*;
